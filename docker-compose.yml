@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # Event Ingestion API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: observatory-api
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DIRECTUS_URL=http://directus:8055
+      - DIRECTUS_TOKEN=${DIRECTUS_TOKEN}
+      - PROMETHEUS_URL=http://prometheus:9090
+      - OBSERVATORY_SECRET=${OBSERVATORY_SECRET}
+    depends_on:
+      - redis
+      - directus
+    restart: unless-stopped
+    networks:
+      - observatory
+
+  # Directus CMS
+  directus:
+    image: directus/directus:latest
+    container_name: observatory-directus
+    ports:
+      - "8055:8055"
+    environment:
+      - KEY=${DIRECTUS_KEY}
+      - SECRET=${DIRECTUS_SECRET}
+      - ADMIN_EMAIL=${DIRECTUS_ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${DIRECTUS_ADMIN_PASSWORD}
+      - DB_CLIENT=sqlite3
+      - DB_FILENAME=/directus/database/database.sqlite
+      - WEBSOCKETS_ENABLED=true
+      - REDIS=redis://redis:6379
+    volumes:
+      - directus-database:/directus/database
+      - directus-uploads:/directus/uploads
+      - directus-extensions:/directus/extensions
+    restart: unless-stopped
+    networks:
+      - observatory
+
+  # Redis (Beast Mode + Caching)
+  redis:
+    image: redis:alpine
+    container_name: observatory-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - observatory
+
+  # Prometheus Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: observatory-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alerts:/etc/prometheus/alerts
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=90d'
+    restart: unless-stopped
+    networks:
+      - observatory
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: observatory-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/observatory.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - api
+      - directus
+    restart: unless-stopped
+    networks:
+      - observatory
+
+volumes:
+  directus-database:
+  directus-uploads:
+  directus-extensions:
+  redis-data:
+  prometheus-data:
+
+networks:
+  observatory:
+    driver: bridge
+

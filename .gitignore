@@ -1,0 +1,107 @@
+# Configuration files with sensitive data
+config.env
+*.env
+
+# AWS credentials and configuration
+.aws/
+aws-credentials
+
+
+
+# CloudFormation temporary files
+*.template
+*.yaml.bak
+*.yml.bak
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Terraform files (if any)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Secrets and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+keys/
+
+# API Key Management Cache Files
+api_discovery_cache.json
+working_apis_cache.json
+cost_history.json
+op_api_cache/ 
+# Mypy cache
+.mypy_cache/
+
+# Confidential and incoming files
+.incoming/
+*.pdf
+
+# Subproject directories
+clewcrew*/
+gke-ai-microservices-hackathon/
+tidb-agentx-hackathon/
+
+# Output files
+*.txt
+*.log
+*_output.txt
+*_regenerated.py
+
+# Security scan reports (generated during pre-commit hooks)
+*-report.json
+*.analysis_report.json
+comprehensive_artifact_analysis_report.json
+
+# Generated test files (broken artifacts)
+tests/generated/
+tests/backup_generated/
+security_scan.json
+cc-sdd/

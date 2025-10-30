@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'beast-observatory'
+    environment: 'production'
+
+scrape_configs:
+  # Observatory API metrics
+  - job_name: 'observatory-api'
+    static_configs:
+      - targets: ['api:8000']
+        labels:
+          service: 'api'
+
+  # OpenFlow Playground agents (will be added dynamically)
+  - job_name: 'openflow-agents'
+    static_configs:
+      - targets: []  # Populated by service discovery
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []  # Configure if using Alertmanager
+
+rule_files:
+  - '/etc/prometheus/alerts/*.yml'
+
