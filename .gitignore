@@ -105,3 +105,8 @@ tests/generated/
 tests/backup_generated/
 security_scan.json
 cc-sdd/
+
+# System and IDE exclusions
+**/.DS_Store
+.AppleDouble
+.LSOverride
